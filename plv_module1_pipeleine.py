@@ -51,7 +51,7 @@ res = ''.join(random.choices(string.ascii_lowercase +
 filename = str_date + '_' + res + '.jpg'
 
 # Directory
-directory = "images/"
+directory = "preprocessed_images/"
   
 # Parent Directory path
 parent_dir = "/home/ubuntu/ms_final_project/"
@@ -61,7 +61,23 @@ dir_path = os.path.join(parent_dir, directory)
   
 # Saving the file
 
-cv2.imwrite(os.path.join(dir_path , filename), image)
+"""PREPROCESSING SCRIPT"""
+
+filename = str_date + '_' + res + '.jpg'
+img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+#cv2_imshow(img)
+
+
+rightImg = cv2.imread("img")
+x = 0
+y = 658
+h = 420
+w = 1918
+crop_img = img[y:y+h, x:x+w]
+cv2.imwrite(os.path.join(dir_path , filename), crop_img)
+print("the preprocessed image is stored")
+
+
 cv2.destroyAllWindows()
 capture.release()
 
