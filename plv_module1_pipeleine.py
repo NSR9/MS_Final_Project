@@ -13,7 +13,7 @@ Original file is located at
 
 import cv2
 import pafy
-#from google.colab.patches import cv2_imshow
+
 import time
 import os
 import subprocess
@@ -65,7 +65,7 @@ dir_path = os.path.join(parent_dir, directory)
 
 filename = str_date + '_' + res + '.jpg'
 img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#cv2_imshow(img)
+
 
 
 rightImg = cv2.imread("img")
@@ -81,7 +81,6 @@ print("the preprocessed image is stored")
 cv2.destroyAllWindows()
 capture.release()
 
-# ! python detect.py --weights weights/S-512.pt --source /content/gdrive/MyDrive/YOLOv5/urban-detection/yolov5/2022-10-16T09:31:22.012493_84anjnf.jpg --img-size 512
 
 
 
