@@ -21,9 +21,9 @@ def image_fetcher(url):
 
     
     # initializing size of string
-    N = 7
+    string_length = 7
     
-    res = ''.join(random.choices(string.ascii_lowercase + string.digits, k=N))
+    res = ''.join(random.choices(string.ascii_lowercase + string.digits, k=string_length))
     filename = str_date + '_' + res + '.jpg'
     
     return fetched_image, filename, str_date

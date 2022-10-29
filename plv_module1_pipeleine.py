@@ -45,7 +45,7 @@ def process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFI
 
     fetched_image, filename_string, str_date = image_fetcher(url)
 
-    # etting the path for saving the fetched and preprocessed images.
+    # Setting the path for saving the fetched and preprocessed images.
     preprocess_image_dir_path = PREPROCESSING_CONFIG["preprocessed-image-dir-save-path"]
     
     # Sending the image to preprocessing script 
@@ -55,7 +55,7 @@ def process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFI
     source = PREPROCESSING_CONFIG["preprocessed-image-dir-save-path"] + filename_string
 
 
-    # DETECTION/ PREDICT part of the process pipeline
+    # PREDICTION part of the process pipeline
     command = [
             'python3',
             '/home/ubuntu/urban-detection/yolov5/detect.py',  
