@@ -2,14 +2,12 @@
 
 
 Before
-The repo version on the branch sprint_dev is squashed and merged on to master untiil now. That version has the Image Fetcher and Pre-processing stages of the pipeline. 
+THe previous version of the repo was merged from "Chay/addingPredictionStage(sourced from sprint_dev) -> sprint_dev" and a corresponding PR to merge "Sprint_dev" onto "master" is raised and awaiting review.
 
 After
-Branched onto this new branch called "chay/addingPredictionStage" sourcing from "sprint_dev" which has following changes:
-* Created a config.ini file.
-* Built my_utils folder which has image fetcher and pre-processing script. 
-* Modified the plv_module_pipeline.py
-* Modularized the code for image_fetcher and preprocessing scripts
+Created a new branch named Chay/addingPostprocessingStage sourced from sprint-Dev and push updated code with Postprocessing script.
+* Modified Plv_module1_pipeline.py with PostProcessing script.
+* Changed paths in the config file. 
 
 
 # Jira Stories
@@ -28,3 +26,4 @@ Here are the steps:
 * Change directory using "cd ms_final_project"
 * Install the required packages by running "pip install -r requirements.txt"
 * then run "python3 plv_module1_pipeline.py"
+* In order to verify the S3 file uplaod and Mongodb insertion, Please Let me know. 

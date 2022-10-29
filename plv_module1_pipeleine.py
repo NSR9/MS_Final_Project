@@ -39,7 +39,7 @@ from subprocess import PIPE, run
 
 
 
-def process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFIG):
+def process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFIG, object_name):
     # IMAGE FETCHER SCRIPT
     url = "https://www.youtube.com/watch?v=e9LYewJGQlk"
 
@@ -69,8 +69,46 @@ def process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFI
    # Running the detection script
     sp = subprocess.Popen(command, stdout=subprocess.PIPE)
     output, _ = sp.communicate()
-    # printing the output from the detection script.
-    print(output)
+
+   # POST-PROCESSING Script 
+
+    result_string =  (output.split(b'\n'))[-5]
+    number_of_vehicles = int(result_string.split(b" ")[1])
+    number_of_empty_parking_slots = 48 - number_of_vehicles
+
+
+    # #S3 BUCKET  UPLOADING CODE
+
+    object_name = object_name + filename_string
+    file_name = os.path.join(pathlib.Path(__file__).parent.resolve(), f"/home/ubuntu/ms_final_project/inference/output/{filename_string}")
+    response = s3.upload_file(file_name, bucket_name, object_name)
+    print(response)
+
+
+
+
+
+    # LOCAL DOCKER MOGODB INSERT
+    # This is the general structure of a s3 object URL - s3://detectionlog/prediction_images/2022-10-24T15:20:53.736000_keoiuy5.jpg
+    s3_url = f's3://{bucket_name}/{object_name}'
+
+    # inserting the s3 link into the local mongodb collection running inside a docker instance
+    db_connection = client.plv_detection_data
+    collection = db_connection.ResultsAndImagelinks
+
+    # Building a response JSON Object
+    record = {
+        "parking_lot_name": parking_lot_name,
+        "parking_lot_uuid": parking_lot_uuid,
+        "number_of_vehicles": number_of_vehicles,
+        "number_of_empty_parking_slots": number_of_empty_parking_slots,
+        "image_s3_uri" : s3_url,
+        "timestamp": str_date
+    }
+    # Inserting it into the database.
+    success = collection.insert_one(record)
+    print("record inserted locally in monogdb")
+
 
 
     
@@ -84,18 +122,38 @@ if __name__ == "__main__":
     AWS_CREDENTIALS = config_obj["AWS_CREDS"]
     AWS_ENV = config_obj["AWS_ENV"]
     PREPROCESSING_CONFIG = config_obj["PRE_PROCESSING_BOUNDS"]
-    iteration = 0
-    while True:
-        print(f"iteration {iteration}")
-        start = time.time()
-        
-        process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFIG)
+    ACCESS_KEY = AWS_CREDENTIALS["access_key"]
+    SECRET_KEY = AWS_CREDENTIALS["secret_key"]
 
-        end = time.time()
-        diff = end - start
-        print(diff)
-        time.sleep(40)
-        iteration += 1 
+    DOMAIN = MONGO["domain"]
+    PORT = MONGO["port"]
+    database = MONGO["database"]
+
+
+    parking_lot_name = MONGO["temp_parking_lot_name"]
+    parking_lot_uuid = MONGO["temp_parking_lot_uuid"]
+
+    bucket_name = AWS_ENV["s3_bucket_name"]
+    object_name = AWS_ENV["s3_object_name"]
+
+    # MONGODB CLIENT CONNECTION 
+    client = MongoClient(
+                host = [ str(DOMAIN) + ":" + str(PORT) ],
+                serverSelectionTimeoutMS = 3000, # 3 second timeout
+                username = "root",
+                password = "12345",
+                )
+    s3 = boto3.client("s3",aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
+
+   
+    start = time.time()
+            
+    process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFIG, object_name)
+
+    end = time.time()
+    diff = end - start
+    print(diff)
+       
 
 
 
