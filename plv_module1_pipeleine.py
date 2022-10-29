@@ -29,7 +29,6 @@ import configparser
 import my_utils
 from my_utils.image_fetcher import image_fetcher
 from my_utils.preprocess import pre_process
-#from my_utils.detection import detect
 from numpy import random
 from pathlib import Path
 from datetime import datetime
