@@ -7,7 +7,11 @@ Original file is located at
     https://colab.research.google.com/drive/1vHs5S8M8Siu6Vdqa2T74fzWEpjaL8ZN7
 """
 
+
 """YOUTUBE STREAM IMAGE FETCHER"""
+
+=======
+# Importing the required packages
 
 import cv2
 import pafy
@@ -34,6 +38,7 @@ from pathlib import Path
 from datetime import datetime
 from pymongo import MongoClient, errors
 from subprocess import PIPE, run
+
 
 
 
@@ -98,6 +103,55 @@ if __name__ == "__main__":
         iteration += 1 
 
 
+
+=======
+## capturing the image from the remote URL YOUTUBE STREAM
+url = "https://www.youtube.com/watch?v=e9LYewJGQlk"
+start = time.time()
+
+# Using Pafy to fetch the image from the youytube stream.
+video = pafy.new(url)
+best = video.getbest(preftype="mp4")
+capture = cv2.VideoCapture()
+capture.open(best.url)
+success,image = capture.read()
+
+# Generating random string to create filename
+current_date = datetime.now()
+str_date = current_date.strftime('%Y-%m-%dT%H:%M:%S.%f%z')
+
+# initializing size of string
+N = 7
+res = ''.join(random.choices(string.ascii_lowercase + string.digits, k=N))
+filename = str_date + '_' + res + '.jpg'
+
+# Directory
+directory = "preprocessed_images/"
+  
+# Parent Directory path
+parent_dir = "/home/ubuntu/ms_final_project/"
+  
+# Path
+dir_path = os.path.join(parent_dir, directory)
+  
+
+"""PREPROCESSING SCRIPT"""
+filename = str_date + '_' + res + '.jpg'
+img = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+rightImg = cv2.imread("img")
+
+# Defining the slicing coordinates
+x = 0
+y = 658
+h = 420
+w = 1918
+crop_img = img[y:y+h, x:x+w]
+cv2.imwrite(os.path.join(dir_path , filename), crop_img)
+print("the preprocessed image is stored")
+
+# Closing CV2 windows
+cv2.destroyAllWindows()
+capture.release()
 
 
 
