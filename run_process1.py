@@ -69,14 +69,19 @@ def process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFI
    # Running the detection script
     sp = subprocess.Popen(command, stdout=subprocess.PIPE)
     output, _ = sp.communicate()
-
+    
    # POST-PROCESSING Script 
-
+    print(output)
     result_string =  (output.split(b'\n'))[-5]
-    number_of_vehicles = int(result_string.split(b" ")[1])
-    number_of_empty_parking_slots = 48 - number_of_vehicles
+    print(result_string)
+    try: 
+       number_of_vehicles = int(result_string.split(b" ")[1])
+       number_of_empty_parking_slots = 48 - number_of_vehicles
+    except:
+       number_of_vehicles = 0
+       number_of_empty_parking_slots = 48    
 
-
+  
     # #S3 BUCKET  UPLOADING CODE
 
     object_name = object_name + filename_string
@@ -145,14 +150,18 @@ if __name__ == "__main__":
                 )
     s3 = boto3.client("s3",aws_access_key_id=ACCESS_KEY, aws_secret_access_key=SECRET_KEY)
 
-   
-    start = time.time()
-            
-    process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFIG, object_name)
+    n = 0
+    while True:
+        print(f"iteration {n}")
+        start = time.time()
+        
+        process2_pipeline(MODEL, MONGO, AWS_CREDENTIALS, AWS_ENV,PREPROCESSING_CONFIG, object_name)
 
-    end = time.time()
-    diff = end - start
-    print(diff)
+        end = time.time()
+        diff = end - start
+        print(diff)
+        time.sleep(40)
+        n += 1 
        
 
 

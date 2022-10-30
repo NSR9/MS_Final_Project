@@ -1,1 +1,4 @@
 weights/
+config.ini
+pre_processed_images/
+inference/
